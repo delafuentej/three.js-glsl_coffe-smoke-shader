@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import smokeVertexShader from './shaders/smoke/vertex.glsl';
 import smokeFragmentShader from './shaders/smoke/fragment.glsl';
 
@@ -41,6 +42,41 @@ const scene = new THREE.Scene();
 // Loaders
 const textureLoader = new THREE.TextureLoader();
 const gltfLoader = new GLTFLoader();
+const rgbeLoader = new RGBELoader();
+
+/**
+ * Environment map
+ */
+
+const loadEnvironmentMap = async () => {
+    try {
+        const environmentMap = await new Promise((resolve, reject) => {
+            rgbeLoader.setDataType(THREE.FloatType).load(
+                './environmentMap/warm_bar_2k.hdr',
+                resolve,
+                undefined,
+                reject
+            );
+        });
+
+        environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+        
+        scene.background = environmentMap;
+        scene.environment = environmentMap;
+
+    } catch (error) {
+        console.error('Error loading environment map:', error);
+    }
+};
+
+loadEnvironmentMap();
+
+// rgbeLoader.load('./environmentMap/warm_bar_2k.hdr', (environmentMap)=> {
+//    environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+//    scene.background = environmentMap;
+//    scene.environment = environmentMap;
+//     })
 
 
 /**
